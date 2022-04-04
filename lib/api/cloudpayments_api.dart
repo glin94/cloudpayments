@@ -5,8 +5,8 @@ export 'models/models.dart';
 
 class CloudPaymentsAPI {
   CloudPaymentsAPI({
-    required this.clientId,
-    required this.secret,
+    required String clientId,
+    required String secret,
   }) {
     _dio = Dio(
       BaseOptions(
@@ -21,8 +21,6 @@ class CloudPaymentsAPI {
   }
 
   late final Dio _dio;
-  final String clientId;
-  final String secret;
 
   ///```dart
   /// final request = PayRequest(
