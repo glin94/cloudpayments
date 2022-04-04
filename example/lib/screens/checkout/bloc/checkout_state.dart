@@ -1,15 +1,7 @@
-import 'package:equatable/equatable.dart';
+part of 'checkout_bloc.dart';
 
 class CheckoutState extends Equatable {
-  final bool isLoading;
-  final bool isGooglePayAvailable;
-  final bool isApplePayAvailable;
-  final String cardHolderError;
-  final String cardNumberError;
-  final String expiryDateError;
-  final String cvcError;
-
-  CheckoutState({
+  const CheckoutState({
     this.isLoading = false,
     this.isGooglePayAvailable = false,
     this.isApplePayAvailable = false,
@@ -19,8 +11,16 @@ class CheckoutState extends Equatable {
     this.cvcError,
   });
 
+  final bool isLoading;
+  final bool isGooglePayAvailable;
+  final bool isApplePayAvailable;
+  final String? cardHolderError;
+  final String? cardNumberError;
+  final String? expiryDateError;
+  final String? cvcError;
+
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         isLoading,
         isGooglePayAvailable,
         isApplePayAvailable,
@@ -31,13 +31,13 @@ class CheckoutState extends Equatable {
       ];
 
   CheckoutState copyWith({
-    bool isLoading,
-    bool isGooglePayAvailable,
-    bool isApplePayAvailable,
-    String cardHolderError,
-    String cardNumberError,
-    String expiryDateError,
-    String cvcError,
+    bool? isLoading,
+    bool? isGooglePayAvailable,
+    bool? isApplePayAvailable,
+    String? cardHolderError,
+    String? cardNumberError,
+    String? expiryDateError,
+    String? cvcError,
   }) {
     return CheckoutState(
       isLoading: isLoading ?? this.isLoading,
@@ -50,5 +50,3 @@ class CheckoutState extends Equatable {
     );
   }
 }
-
-

@@ -1,20 +1,28 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloudpayments/cloudpayments.dart';
 import 'package:cloudpayments/cloudpayments_apple_pay.dart';
 import 'package:cloudpayments/cloudpayments_google_pay.dart';
-import 'package:cloudpayments_example/common/extended_bloc.dart';
-import 'package:cloudpayments_example/constants.dart';
-import 'package:cloudpayments_example/network/api.dart';
-import 'package:cloudpayments_example/screens/checkout/checkout_event.dart';
-import 'package:cloudpayments_example/screens/checkout/checkout_state.dart';
+import 'package:equatable/equatable.dart';
+import 'package:example/common/extended_bloc.dart';
+import 'package:example/constants.dart';
+import 'package:example/models/transaction.dart';
+import 'package:example/network/api.dart';
+
+part 'checkout_state.dart';
+part 'checkout_event.dart';
 
 class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
+  CheckoutBloc()
+      : super(const CheckoutState(
+          isLoading: false,
+          isGooglePayAvailable: false,
+        ));
+
   final api = Api();
   final googlePay = CloudpaymentsGooglePay(GooglePayEnvironment.test);
   final applePay = CloudpaymentsApplePay();
-
-  CheckoutBloc() : super(CheckoutState(isLoading: false, isGooglePayAvailable: false));
 
   @override
   Stream<CheckoutState> mapEventToState(CheckoutEvent event) async* {
@@ -40,21 +48,33 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
   Stream<CheckoutState> _init(Init event) async* {
     if (Platform.isAndroid) {
       final isGooglePayAvailable = await googlePay.isGooglePayAvailable();
-      yield state.copyWith(isGooglePayAvailable: isGooglePayAvailable, isApplePayAvailable: false);
+      yield state.copyWith(
+          isGooglePayAvailable: isGooglePayAvailable,
+          isApplePayAvailable: false);
     } else if (Platform.isIOS) {
       final isApplePayAvailable = await applePay.isApplePayAvailable();
-      yield state.copyWith(isApplePayAvailable: isApplePayAvailable, isGooglePayAvailable: false);
+      yield state.copyWith(
+          isApplePayAvailable: isApplePayAvailable,
+          isGooglePayAvailable: false);
     }
   }
 
   Stream<CheckoutState> _onPayButtonPressed(PayButtonPressed event) async* {
-    final isCardHolderValid = event.cardHolder.isNotEmpty;
-    final isValidCardNumber = await Cloudpayments.isValidNumber(event.cardNumber);
-    final isValidExpiryDate = await Cloudpayments.isValidExpiryDate(event.expiryDate);
-    final isValidCvcCode = event.cvcCode.length == 3;
+    final cardNumber = event.cardNumber;
+    final expiryDate = event.expiryDate;
+    final cvcCode = event.cvcCode;
+
+    if (cardNumber == null || expiryDate == null || cvcCode == null) {
+      yield state.copyWith(cardHolderError: 'Somthing fields is empty');
+      return;
+    }
+
+    final isCardHolderValid = event.cardHolder?.isNotEmpty ?? false;
+    final isValidCardNumber = await Cloudpayments.isValidNumber(cardNumber);
+    final isValidExpiryDate = await Cloudpayments.isValidExpiryDate(expiryDate);
+    final isValidCvcCode = cvcCode.length == 3;
 
     if (!isCardHolderValid) {
-      print('Card holder is no valid');
       yield state.copyWith(cardHolderError: 'Card holder can\'t be blank');
       return;
     } else if (!isValidCardNumber) {
@@ -68,17 +88,28 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
       return;
     }
 
-    yield state.copyWith(cardHolderError: null, cardNumberError: null, expiryDateError: null, cvcError: null);
+    yield state.copyWith(
+      cardHolderError: null,
+      cardNumberError: null,
+      expiryDateError: null,
+      cvcError: null,
+    );
 
     final cryptogram = await Cloudpayments.cardCryptogram(
-      cardNumber: event.cardNumber,
-      cardDate: event.expiryDate,
-      cardCVC: event.cvcCode,
+      cardNumber: event.cardNumber!,
+      cardDate: event.expiryDate!,
+      cardCVC: event.cvcCode!,
       publicId: Constants.MERCHANT_PUBLIC_ID,
     );
 
     if (cryptogram.cryptogram != null) {
-      add(Auth(cryptogram.cryptogram, event.cardHolder, '1'));
+      add(
+        Auth(
+          cryptogram.cryptogram!,
+          event.cardHolder!,
+          '1',
+        ),
+      );
     }
   }
 
@@ -98,13 +129,15 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
 
       if (result.isSuccess) {
         final token = result.token;
+        if (token == null) {
+          throw Exception('Response token is null');
+        }
         add(Charge(token, 'Google Pay', '2.34'));
       } else if (result.isError) {
-        sendCommand(ShowSnackBar(result.errorDescription));
+        sendCommand(ShowSnackBar(result.errorDescription ?? 'error'));
       } else if (result.isCanceled) {
         sendCommand(ShowSnackBar('Google pay has canceled'));
       }
-
     } catch (e) {
       yield state.copyWith(isLoading: false);
       sendCommand(ShowSnackBar("Error"));
@@ -126,13 +159,15 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
 
       if (result.isSuccess) {
         final token = result.token;
+        if (token == null) {
+          throw Exception('Response token is null');
+        }
         add(Auth(token, '', '650.50'));
       } else if (result.isError) {
-        sendCommand(ShowSnackBar(result.errorMessage));
+        sendCommand(ShowSnackBar(result.errorMessage ?? 'error'));
       } else if (result.isCanceled) {
         sendCommand(ShowSnackBar('Apple pay has canceled'));
       }
-
     } catch (e) {
       print('Error $e');
       yield state.copyWith(isLoading: false);
@@ -144,7 +179,8 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
     yield state.copyWith(isLoading: true);
 
     try {
-      final transaction = await api.charge(event.token, event.cardHolder, event.amount);
+      final transaction =
+          await api.charge(event.token, event.cardHolder, event.amount);
       yield state.copyWith(isLoading: false);
       sendCommand(ShowSnackBar(transaction.cardHolderMessage));
     } catch (e) {
@@ -157,7 +193,12 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
     yield state.copyWith(isLoading: true);
 
     try {
-      final transaction = await api.auth(event.cryptogram, event.cardHolder, event.amount);
+      final transaction = await api.auth(
+        event.cryptogram,
+        event.cardHolder,
+        event.amount,
+      );
+
       yield state.copyWith(isLoading: false);
       if (transaction.paReq != null && transaction.acsUrl != null) {
         add(Show3DS(transaction));
@@ -179,10 +220,10 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
     );
 
     if (result != null) {
-      if (result.success) {
-        add(Post3DS(result.md, result.paRes));
+      if (result.success ?? false) {
+        add(Post3DS(result.md!, result.paRes!));
       } else {
-        sendCommand(ShowSnackBar(result.error));
+        sendCommand(ShowSnackBar(result.error ?? 'error'));
       }
     }
   }

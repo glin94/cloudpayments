@@ -1,8 +1,6 @@
-import 'package:cloudpayments_example/common/custom_button.dart';
-import 'package:cloudpayments_example/common/extended_bloc.dart';
-import 'package:cloudpayments_example/screens/checkout/checkout_bloc.dart';
-import 'package:cloudpayments_example/screens/checkout/checkout_event.dart';
-import 'package:cloudpayments_example/screens/checkout/checkout_state.dart';
+import 'package:example/common/extended_bloc.dart';
+import 'package:example/custom_button.dart';
+import 'package:example/screens/checkout/bloc/checkout_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,31 +8,34 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CheckoutScreen extends StatelessWidget {
+  const CheckoutScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CheckoutBloc>(
       create: (context) {
         return CheckoutBloc()..add(Init());
       },
-      child: CheckoutScreenContent(),
+      child: const CheckoutScreenContent(),
     );
   }
 }
 
 class CheckoutScreenContent extends StatefulWidget {
+  const CheckoutScreenContent({Key? key}) : super(key: key);
+
   @override
   _CheckoutScreenContentState createState() => _CheckoutScreenContentState();
 }
 
 class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
   final cardHolderController = TextEditingController();
-  final cardNumberMaskFormatter = MaskTextInputFormatter(mask: '#### #### #### ####');
+  final cardNumberMaskFormatter =
+      MaskTextInputFormatter(mask: '#### #### #### ####');
   final expireDateFormatter = MaskTextInputFormatter(mask: '##/##');
   final cvcDateFormatter = MaskTextInputFormatter(mask: '###');
 
   void _onPayClick(BuildContext context) async {
-    print('_onPayClick');
-
     FocusScope.of(context).unfocus();
 
     final cardHolder = cardHolderController.text;
@@ -42,14 +43,14 @@ class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
     final expiryDate = expireDateFormatter.getMaskedText();
     final cvcCode = cvcDateFormatter.getUnmaskedText();
 
-    final event = PayButtonPressed(
-      cardHolder: cardHolder,
-      cardNumber: cardNumber,
-      expiryDate: expiryDate,
-      cvcCode: cvcCode,
+    BlocProvider.of<CheckoutBloc>(context).add(
+      PayButtonPressed(
+        cardHolder: cardHolder,
+        cardNumber: cardNumber,
+        expiryDate: expiryDate,
+        cvcCode: cvcCode,
+      ),
     );
-
-    context.read<CheckoutBloc>().add(event);
   }
 
   @override
@@ -164,10 +165,8 @@ class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
                         ),
                         onPressed: () => _onPayClick(context),
                       ),
-                      if (state.isGooglePayAvailable)
-                        GooglePaySection(),
-                      if (state.isApplePayAvailable)
-                        ApplePaySection(),
+                      if (state.isGooglePayAvailable) GooglePaySection(),
+                      if (state.isApplePayAvailable) ApplePaySection(),
                     ],
                   ),
                 ),
@@ -181,6 +180,8 @@ class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
 }
 
 class GooglePaySection extends StatelessWidget {
+  const GooglePaySection({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return PaySection(
@@ -208,6 +209,8 @@ class GooglePaySection extends StatelessWidget {
 }
 
 class ApplePaySection extends StatelessWidget {
+  const ApplePaySection({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return PaySection(

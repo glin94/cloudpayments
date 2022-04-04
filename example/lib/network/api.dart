@@ -1,13 +1,17 @@
-import 'package:cloudpayments_example/models/transaction.dart';
-import 'package:cloudpayments_example/network/network.dart';
-import 'package:cloudpayments_example/network/pay_request.dart';
-import 'package:cloudpayments_example/network/post_3ds_request.dart';
-import 'package:cloudpayments_example/network/urls.dart';
+import 'package:example/models/transaction.dart';
+import 'package:example/network/network.dart';
+import 'package:example/network/pay_request.dart';
+import 'package:example/network/post_3ds_request.dart';
+import 'package:example/network/urls.dart';
 
 class Api {
   final _network = Network(Url.apiUrl);
 
-  Future<Transaction> auth(String cardCryptogramPacket, String cardHolderName, String amount) async {
+  Future<Transaction> auth(
+    String cardCryptogramPacket,
+    String cardHolderName,
+    String amount,
+  ) async {
     final request = PayRequest(
       amount: amount,
       currency: "RUB",
@@ -25,11 +29,11 @@ class Api {
       body: request.toJson(),
     );
 
-
     return Transaction.fromJson(response.data);
   }
 
-  Future<Transaction> charge(String cardCryptogramPacket, String cardHolderName, String amount) async {
+  Future<Transaction> charge(
+      String cardCryptogramPacket, String cardHolderName, String amount) async {
     final request = PayRequest(
       amount: amount,
       currency: "RUB",
@@ -46,7 +50,6 @@ class Api {
       headers: {'Content-Type': 'application/json'},
       body: request.toJson(),
     );
-
 
     return Transaction.fromJson(response.data);
   }

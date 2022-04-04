@@ -1,4 +1,15 @@
 class PayRequest {
+  PayRequest({
+    required this.amount,
+    required this.currency,
+    required this.name,
+    required this.cardCryptogramPacket,
+    required this.invoiceId,
+    required this.description,
+    required this.accountId,
+    required this.jsonData,
+  });
+
   final String amount;
   final String currency;
   final String name;
@@ -8,20 +19,8 @@ class PayRequest {
   final String accountId;
   final String jsonData;
 
-  PayRequest({
-    this.amount,
-    this.currency,
-    this.name,
-    this.cardCryptogramPacket,
-    this.invoiceId,
-    this.description,
-    this.accountId,
-    this.jsonData,
-  });
-
   Map<String, dynamic> toJson() {
-    final map = Map<String, dynamic>();
-
+    final map = <String, dynamic>{};
     map['amount'] = amount;
     map['currency'] = currency;
     map['name'] = name;

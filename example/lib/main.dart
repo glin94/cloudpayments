@@ -1,11 +1,16 @@
-import 'package:cloudpayments_example/screens/checkout/checkout_screen.dart';
+import 'package:example/screens/checkout/bloc/observer.dart';
+import 'package:example/screens/checkout/checkout_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
-  runApp(MyApp());
+  Bloc.observer = AppBlocObserver();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -23,10 +28,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: CheckoutScreen(),
     );
   }
 }
-
