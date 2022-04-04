@@ -5,7 +5,7 @@ import 'package:example/network/post_3ds_request.dart';
 import 'package:example/network/urls.dart';
 
 class Api {
-  final _network = Network(Url.apiUrl);
+  final _network = Network(Constants.apiUrl);
 
   Future<Transaction> auth(
     String cardCryptogramPacket,
@@ -24,7 +24,7 @@ class Api {
     );
 
     final response = await _network.post(
-      Url.authUrl,
+      Constants.authUrl,
       headers: {'Content-Type': 'application/json'},
       body: request.toJson(),
     );
@@ -46,7 +46,7 @@ class Api {
     );
 
     final response = await _network.post(
-      Url.chargeUrl,
+      Constants.chargeUrl,
       headers: {'Content-Type': 'application/json'},
       body: request.toJson(),
     );
@@ -58,7 +58,7 @@ class Api {
     final request = Post3dsRequest(transactionId, paRes);
 
     final response = await _network.post(
-      Url.post3ds,
+      Constants.post3ds,
       headers: {'Content-Type': 'application/json'},
       body: request.toJson(),
     );

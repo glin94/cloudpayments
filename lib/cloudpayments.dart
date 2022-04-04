@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloudpayments/cryptogram.dart';
-import 'package:cloudpayments/three_ds_response.dart';
+import 'package:cloudpayments/models/models.dart';
 import 'package:flutter/services.dart';
 
 /// Contains helpful methods that allow you to check payment card parameters validity and create a card cryptogram.

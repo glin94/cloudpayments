@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cloudpayments/google_pay_response.dart';
+import 'package:cloudpayments/models/google_pay_response.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 

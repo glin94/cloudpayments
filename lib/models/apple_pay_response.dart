@@ -1,6 +1,5 @@
+import 'package:cloudpayments/models/models.dart';
 import 'package:flutter/services.dart';
-
-import 'response_statuses.dart';
 
 class ApplePayResponse {
   final String status;

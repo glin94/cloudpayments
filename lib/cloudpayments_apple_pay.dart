@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cloudpayments/apple_pay_response.dart';
+import 'package:cloudpayments/models/models.dart';
 import 'package:flutter/services.dart';
 
 /// Contains helper methods that allow you to interact with Apple Pay.

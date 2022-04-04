@@ -1,9 +1,7 @@
-abstract class Url {
-  static String get apiUrl => 'https://wp-demo.cloudpayments.ru/';
+abstract class Constants {
+  static String get apiUrl => 'https://api.cloudpayments.ru/';
 
-  static String get authUrl => 'cp_auth.php';
-
-  static String get chargeUrl => 'cp_charge.php';
-
-  static String get post3ds => 'cp_post3ds.php';
+  static String get authUrl => 'payments/cards/auth';
+  static String get chargeUrl => 'payments/cards/charge';
+  static String get post3ds => 'payments/ThreeDSCallback';
 }
