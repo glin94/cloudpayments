@@ -14,7 +14,8 @@ class CheckoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<CheckoutBloc>(
       create: (context) {
-        return CheckoutBloc()..add(Init());
+        return CheckoutBloc();
+        //..add(Init());
       },
       child: const CheckoutScreenContent(),
     );
@@ -70,7 +71,6 @@ class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
         },
         child: BlocBuilder<CheckoutBloc, CheckoutState>(
           builder: (context, state) {
-            print('Rebuild screen');
             return LoadingOverlay(
               isLoading: state.isLoading,
               child: SingleChildScrollView(
@@ -79,7 +79,7 @@ class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Total to be paid: 2 RUB.',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),

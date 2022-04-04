@@ -1,7 +1,6 @@
-import 'package:example/models/transaction.dart';
+import 'package:cloudpayments/cloudpayments.dart';
 import 'package:example/network/network.dart';
-import 'package:example/network/pay_request.dart';
-import 'package:example/network/post_3ds_request.dart';
+import 'package:cloudpayments/api/models/post_3ds_request.dart';
 import 'package:example/network/urls.dart';
 
 class Api {
@@ -20,7 +19,11 @@ class Api {
       invoiceId: "1122",
       description: "Оплата товаров",
       accountId: "123",
-      jsonData: "{\"age\":27,\"name\":\"Ivan\",\"phone\":\"+79998881122\"}",
+      jsonData: {
+        "age": 27,
+        "name": "Ivan",
+        "phone": "+79998881122",
+      },
     );
 
     final response = await _network.post(
@@ -42,7 +45,11 @@ class Api {
       invoiceId: "1122",
       description: "Оплата товаров",
       accountId: "123",
-      jsonData: "{\"age\":27,\"name\":\"Ivan\",\"phone\":\"+79998881122\"}",
+      jsonData: {
+        "age": 27,
+        "name": "Ivan",
+        "phone": "+79998881122",
+      },
     );
 
     final response = await _network.post(

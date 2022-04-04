@@ -7,7 +7,7 @@ class PayRequest {
     required this.invoiceId,
     required this.description,
     required this.accountId,
-    required this.jsonData,
+    this.jsonData,
   });
 
   final String amount;
@@ -17,7 +17,7 @@ class PayRequest {
   final String invoiceId;
   final String description;
   final String accountId;
-  final String jsonData;
+  final Map<String, dynamic>? jsonData;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -28,7 +28,9 @@ class PayRequest {
     map['invoice_id'] = invoiceId;
     map['description'] = description;
     map['account_id'] = accountId;
-    map['json_data'] = jsonData;
+    if (jsonData != null) {
+      map['json_data'] = jsonData;
+    }
 
     return map;
   }

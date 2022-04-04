@@ -59,10 +59,10 @@ class Show3DS extends CheckoutEvent {
 }
 
 class Post3DS extends CheckoutEvent {
-  final String md;
+  final String id;
   final String paRes;
 
-  Post3DS(this.md, this.paRes);
+  Post3DS(this.id, this.paRes);
 }
 
 class GooglePayPressed extends CheckoutEvent {}
