@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:example/network/response.dart';
 import 'package:dio/dio.dart' as dio;
 
 class Network {
@@ -63,4 +61,21 @@ class Network {
     final response = Response.fromJson(jsonDecode(r.data));
     return response;
   }
+}
+
+class Response {
+  final bool success;
+  final String message;
+  final dynamic data;
+
+  Response(this.success, this.message, this.data);
+
+  Map<String, dynamic> get body => data is String
+      ? jsonDecode(data as String)
+      : data as Map<String, dynamic>;
+
+  Response.fromJson(Map<String, dynamic> json)
+      : success = json['Success'],
+        message = json['Message'],
+        data = json['Model'];
 }

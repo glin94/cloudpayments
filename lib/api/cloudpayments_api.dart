@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 
 export 'models/models.dart';
 
+part 'cloudpayments_api_urls.dart';
+
 class CloudPaymentsAPI {
   CloudPaymentsAPI({
     required String clientId,
@@ -10,7 +12,7 @@ class CloudPaymentsAPI {
   }) {
     _dio = Dio(
       BaseOptions(
-        baseUrl: CloudPaymentsUrls.apiUrl,
+        baseUrl: _CloudPaymentsUrls.apiUrl,
         headers: {
           'Content-Type': 'application/json',
           "CLOUD_PAYMENTS_CLIENT_ID": clientId,
@@ -40,7 +42,7 @@ class CloudPaymentsAPI {
   /// ```
   Future<Transaction> auth(PayRequest payRequest) async {
     final response = await _dio.post(
-      CloudPaymentsUrls.authUrl,
+      _CloudPaymentsUrls.authUrl,
       data: payRequest.toJson(),
     );
 
@@ -49,18 +51,10 @@ class CloudPaymentsAPI {
 
   Future<Transaction> post3ds(Post3dsRequest request) async {
     final response = await _dio.post(
-      CloudPaymentsUrls.post3ds,
+      _CloudPaymentsUrls.post3ds,
       data: request.toJson(),
     );
 
     return Transaction.fromJson(response.data);
   }
-}
-
-abstract class CloudPaymentsUrls {
-  static String get apiUrl => 'https://api.cloudpayments.ru/';
-
-  static String get authUrl => 'payments/cards/auth';
-  static String get chargeUrl => 'payments/cards/charge';
-  static String get post3ds => 'payments/ThreeDSCallback';
 }
