@@ -8,4 +8,5 @@ abstract class _CloudPaymentsUrls {
   static String get authUrl => 'payments/cards/auth';
   static String get chargeUrl => 'payments/cards/charge';
   static String get post3ds => 'payments/ThreeDSCallback';
+  static String get test => 'test';
 }

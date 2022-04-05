@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:cloudpayments/cloudpayments.dart';
 import 'package:equatable/equatable.dart';
 import 'package:example/common/extended_bloc.dart';
+import 'package:example/common/logger.dart';
 import 'package:example/constants.dart';
 import 'package:example/network/api.dart';
 import 'package:example/screens/checkout/bloc/checkout_constants.dart';
@@ -42,25 +41,26 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
       yield* _googlePayPressed(event);
     } else if (event is ApplePayPressed) {
       yield* _applePayPressed(event);
-    } else if (event is Charge) {
-      yield* _charge(event);
     }
+    // else if (event is Charge) {
+    //   yield* _charge(event);
+    // }
   }
 
-  Stream<CheckoutState> _init(Init event) async* {
-    if (Platform.isAndroid) {
-      final isGooglePayAvailable = await _googlePay.isGooglePayAvailable();
-      yield state.copyWith(
-          isGooglePayAvailable: isGooglePayAvailable,
-          isApplePayAvailable: false);
-    } else if (Platform.isIOS) {
-      final isApplePayAvailable = await _applePay.isApplePayAvailable();
-      yield state.copyWith(
-          isApplePayAvailable: isApplePayAvailable,
-          isGooglePayAvailable: false);
-    }
-    yield state;
-  }
+  // Stream<CheckoutState> _init(Init event) async* {
+  //   if (Platform.isAndroid) {
+  //     final isGooglePayAvailable = await _googlePay.isGooglePayAvailable();
+  //     yield state.copyWith(
+  //         isGooglePayAvailable: isGooglePayAvailable,
+  //         isApplePayAvailable: false);
+  //   } else if (Platform.isIOS) {
+  //     final isApplePayAvailable = await _applePay.isApplePayAvailable();
+  //     yield state.copyWith(
+  //         isApplePayAvailable: isApplePayAvailable,
+  //         isGooglePayAvailable: false);
+  //   }
+  //   yield state;
+  // }
 
   Stream<CheckoutState> _onPayButtonPressed(PayButtonPressed event) async* {
     final cardNumber = event.cardNumber;
@@ -98,21 +98,19 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
       cvcError: null,
     );
 
-    final cryptogram = await Cloudpayments.cardCryptogram(
-      cardNumber: event.cardNumber!,
-      cardDate: event.expiryDate!,
-      cardCVC: event.cvcCode!,
-      publicId: Constants.MERCHANT_PUBLIC_ID,
-    );
-
-    if (cryptogram.cryptogram != null) {
-      add(
-        Auth(
-          cryptogram.cryptogram!,
-          event.cardHolder!,
-          '1',
-        ),
+    try {
+      final cryptogram = await Cloudpayments.cardCryptogram(
+        cardNumber: event.cardNumber!,
+        cardDate: event.expiryDate!,
+        cardCVC: event.cvcCode!,
+        publicId: Constants.MERCHANT_PUBLIC_ID,
       );
+
+      if (cryptogram.cryptogram != null) {
+        add(Auth(cryptogram.cryptogram!, event.cardHolder!, '1'));
+      }
+    } catch (e, st) {
+      talker.handle(e, st);
     }
   }
 
@@ -135,13 +133,14 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
         if (token == null) {
           throw Exception('Response token is null');
         }
-        add(Charge(token, 'Google Pay', '2.34'));
+        // add(Charge(token, 'Google Pay', '2.34'));
       } else if (result.isError) {
         sendCommand(ShowSnackBar(result.errorDescription ?? 'error'));
       } else if (result.isCanceled) {
         sendCommand(ShowSnackBar('Google pay has canceled'));
       }
-    } catch (e) {
+    } catch (e, st) {
+      talker.handle(e, st);
       yield state.copyWith(isLoading: false);
       sendCommand(ShowSnackBar("Error"));
     }
@@ -171,26 +170,27 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
       } else if (result.isCanceled) {
         sendCommand(ShowSnackBar('Apple pay has canceled'));
       }
-    } catch (e) {
-      print('Error $e');
+    } catch (e, st) {
+      talker.handle(e, st);
       yield state.copyWith(isLoading: false);
       sendCommand(ShowSnackBar("Error"));
     }
   }
 
-  Stream<CheckoutState> _charge(Charge event) async* {
-    yield state.copyWith(isLoading: true);
+  // Stream<CheckoutState> _charge(Charge event) async* {
+  //   yield state.copyWith(isLoading: true);
 
-    try {
-      final transaction =
-          await _api.charge(event.token, event.cardHolder, event.amount);
-      yield state.copyWith(isLoading: false);
-      sendCommand(ShowSnackBar(transaction.cardHolderMessage));
-    } catch (e) {
-      yield state.copyWith(isLoading: false);
-      sendCommand(ShowSnackBar("Error"));
-    }
-  }
+  //   try {
+  //     final transaction =
+  //         await _api.charge(event.token, event.cardHolder, event.amount);
+  //     yield state.copyWith(isLoading: false);
+  //     sendCommand(ShowSnackBar(transaction.cardHolderMessage));
+  //   } catch (e, st) {
+  //     talker.handle(e, st);
+  //     yield state.copyWith(isLoading: false);
+  //     sendCommand(ShowSnackBar("Error"));
+  //   }
+  // }
 
   Stream<CheckoutState> _auth(Auth event) async* {
     yield state.copyWith(isLoading: true);
@@ -205,40 +205,44 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
           invoiceId: "1122",
           description: "Оплата товаров",
           accountId: "123",
-          jsonData: {
-            "age": 27,
-            "name": "Ivan",
-            "phone": "+79998881122",
-          },
         ),
       );
 
       yield state.copyWith(isLoading: false);
-      if (transaction.paReq != null && transaction.acsUrl != null) {
+      if (transaction.model?.paReq != null &&
+          transaction.model?.acsUrl != null) {
         add(Show3DS(transaction));
       } else {
-        sendCommand(ShowSnackBar(transaction.cardHolderMessage));
+        sendCommand(
+          ShowSnackBar(transaction.model?.cardHolderMessage ?? 'error'),
+        );
       }
-    } catch (e) {
+    } catch (e, st) {
+      talker.handle(e, st);
       yield state.copyWith(isLoading: false);
       sendCommand(ShowSnackBar("Error"));
     }
   }
 
   Stream<CheckoutState> _show3DS(Show3DS event) async* {
-    final transaction = event.transaction;
-    final result = await Cloudpayments.show3ds(
-      acsUrl: transaction.acsUrl,
-      transactionId: transaction.transactionId,
-      paReq: transaction.paReq,
-    );
+    try {
+      final transaction = event.transaction;
+      final result = await Cloudpayments.show3ds(
+        acsUrl: transaction.model!.acsUrl!,
+        transactionId: transaction.model!.transactionId!,
+        paReq: transaction.model!.paReq!,
+      );
 
-    if (result != null) {
-      if (result.success ?? false) {
-        add(Post3DS(result.md!, result.paRes!));
-      } else {
-        sendCommand(ShowSnackBar(result.error ?? 'error'));
+      if (result != null) {
+        if (result.success ?? false) {
+          add(Post3DS(result.md!, result.paRes!));
+        } else {
+          sendCommand(ShowSnackBar(result.error ?? 'error'));
+        }
       }
+    } catch (e, st) {
+      talker.handle(e, st);
+      sendCommand(ShowSnackBar("Error"));
     }
   }
 
@@ -253,8 +257,10 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
         ),
       );
       yield state.copyWith(isLoading: false);
-      sendCommand(ShowSnackBar(transaction.cardHolderMessage));
-    } catch (e) {
+      sendCommand(
+          ShowSnackBar(transaction.model?.cardHolderMessage ?? 'error'));
+    } catch (e, st) {
+      talker.handle(e, st);
       yield state.copyWith(isLoading: false);
       sendCommand(ShowSnackBar("Error"));
     }

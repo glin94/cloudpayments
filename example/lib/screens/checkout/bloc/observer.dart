@@ -1,15 +1,14 @@
+import 'package:example/common/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:talker/talker.dart';
 
 class AppBlocObserver extends BlocObserver {
-  final _talker = Talker();
-
   @override
   void onEvent(Bloc bloc, Object? event) {
     super.onEvent(bloc, event);
     final msg = 'Event recive in ${bloc.runtimeType} event: $event';
     final log = BlocEventLog(msg);
-    _talker.logTyped(log);
+    talker.logTyped(log);
   }
 
   @override
@@ -17,15 +16,15 @@ class AppBlocObserver extends BlocObserver {
     super.onTransition(bloc, transition);
 
     final msg =
-        '\n${'TRANSITION in ${bloc.runtimeType} with event ${transition.event.runtimeType}'}\n${'CURRENT state: ${transition.currentState.runtimeType}'}\n${'NEXT state: ${transition.nextState.runtimeType}'}';
+        '\n${'TRANSITION in ${bloc.runtimeType} with event ${transition.event}'}\n${'CURRENT state: ${transition.currentState}'}\n${'NEXT state: ${transition.nextState.runtimeType}'}';
     final log = BlocStateLog(msg);
-    _talker.logTyped(log);
+    talker.logTyped(log);
   }
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
-    _talker.handle(error, stackTrace, '🚨 [BLOC] Error in ${bloc.runtimeType}');
+    talker.handle(error, stackTrace, '🚨 [BLOC] Error in ${bloc.runtimeType}');
   }
 }
 

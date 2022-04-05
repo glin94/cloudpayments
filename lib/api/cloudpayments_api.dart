@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:cloudpayments/api/models/models.dart';
 import 'package:dio/dio.dart';
 
@@ -10,13 +13,17 @@ class CloudPaymentsAPI {
     required String clientId,
     required String secret,
   }) {
+    final token = base64.encode(latin1.encode('$clientId:$secret'));
+    final authstr = 'Basic ' + token.trim();
+
     _dio = Dio(
       BaseOptions(
         baseUrl: _CloudPaymentsUrls.apiUrl,
         headers: {
           'Content-Type': 'application/json',
-          "CLOUD_PAYMENTS_CLIENT_ID": clientId,
-          "CLOUD_PAYMENTS_SECRET": secret,
+          'Authorization': authstr,
+          // "CLOUD_PAYMENTS_CLIENT_ID": clientId,
+          // "CLOUD_PAYMENTS_SECRET": secret,
         },
       ),
     );
@@ -56,5 +63,11 @@ class CloudPaymentsAPI {
     );
 
     return Transaction.fromJson(response.data);
+  }
+
+  Future<void> test() async {
+    final response = await _dio.post(_CloudPaymentsUrls.test);
+
+    log('$response');
   }
 }

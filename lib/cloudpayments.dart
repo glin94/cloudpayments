@@ -62,7 +62,7 @@ class Cloudpayments {
   /// Returns [ThreeDsResponse]. You have to use parameters of [ThreeDsResponse] in post3ds api method.
   static Future<ThreeDsResponse?> show3ds({
     required String acsUrl,
-    required String transactionId,
+    required int transactionId,
     required String paReq,
   }) async {
     try {
