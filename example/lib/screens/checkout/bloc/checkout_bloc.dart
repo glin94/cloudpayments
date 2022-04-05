@@ -3,7 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:example/common/extended_bloc.dart';
 import 'package:example/common/logger.dart';
 import 'package:example/constants.dart';
-import 'package:example/network/api.dart';
+import 'package:example/network/ip_service.dart';
+// import 'package:example/network/api.dart';
 import 'package:example/screens/checkout/bloc/checkout_constants.dart';
 
 part 'checkout_state.dart';
@@ -16,7 +17,8 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
           isGooglePayAvailable: false,
         ));
 
-  final _api = Api();
+  // final _api = Api();
+  final _ipService = IpService();
   final _googlePay = CloudpaymentsGooglePay(GooglePayEnvironment.test);
   final _applePay = CloudpaymentsApplePay();
   final _cloudPaymentApi = CloudPaymentsAPI(
@@ -107,7 +109,7 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
       );
 
       if (cryptogram.cryptogram != null) {
-        add(Auth(cryptogram.cryptogram!, event.cardHolder!, '1'));
+        add(Auth(cryptogram.cryptogram!, event.cardHolder!, 1));
       }
     } catch (e, st) {
       talker.handle(e, st);
@@ -164,7 +166,7 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
         if (token == null) {
           throw Exception('Response token is null');
         }
-        add(Auth(token, '', '650.50'));
+        add(Auth(token, '', 650.50));
       } else if (result.isError) {
         sendCommand(ShowSnackBar(result.errorMessage ?? 'error'));
       } else if (result.isCanceled) {
@@ -196,15 +198,17 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
     yield state.copyWith(isLoading: true);
 
     try {
+      final ip = await _ipService.getIp();
       final transaction = await _cloudPaymentApi.auth(
         PayRequest(
           amount: event.amount,
           name: event.cardHolder,
           cardCryptogramPacket: event.cryptogram,
+          ipAddress: ip,
           currency: "RUB",
-          invoiceId: "1122",
-          description: "Оплата товаров",
-          accountId: "123",
+          // invoiceId: "1122",
+          // description: "Оплата товаров",
+          // accountId: "123",
         ),
       );
 

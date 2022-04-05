@@ -2,15 +2,15 @@ class PayRequest {
   PayRequest({
     required this.amount,
     required this.cardCryptogramPacket,
-    this.currency,
-    this.name,
+    required this.currency,
+    required this.ipAddress,
+    required this.name,
     this.invoiceId,
     this.description,
     this.accountId,
-    this.ipAddress,
   });
 
-  final String amount;
+  final num amount;
   final String? currency;
   final String? name;
   final String cardCryptogramPacket;
@@ -23,11 +23,12 @@ class PayRequest {
     final map = <String, dynamic>{};
     map['Amount'] = amount;
     map['Currency'] = currency;
-    map['Name'] = name;
     map['CardCryptogramPacket'] = cardCryptogramPacket;
-    map['InvoiceId'] = invoiceId;
-    map['Description'] = description;
     map['IpAddress'] = ipAddress;
+    map['Name'] = name;
+
+    if (invoiceId != null) map['InvoiceId'] = invoiceId;
+    if (description != null) map['Description'] = description;
     return map;
   }
 }

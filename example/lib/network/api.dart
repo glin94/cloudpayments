@@ -8,7 +8,7 @@ class Api {
   Future<Transaction> auth(
     String cardCryptogramPacket,
     String cardHolderName,
-    String amount,
+    int amount,
   ) async {
     final request = PayRequest(
       amount: amount,
@@ -18,6 +18,7 @@ class Api {
       invoiceId: "1122",
       description: "Оплата товаров",
       accountId: "123",
+      ipAddress: '',
     );
 
     final response = await _network.post(
@@ -30,7 +31,7 @@ class Api {
   }
 
   Future<Transaction> charge(
-      String cardCryptogramPacket, String cardHolderName, String amount) async {
+      String cardCryptogramPacket, String cardHolderName, int amount) async {
     final request = PayRequest(
       amount: amount,
       currency: "RUB",
@@ -39,6 +40,7 @@ class Api {
       invoiceId: "1122",
       description: "Оплата товаров",
       accountId: "123",
+      ipAddress: '',
     );
 
     final response = await _network.post(

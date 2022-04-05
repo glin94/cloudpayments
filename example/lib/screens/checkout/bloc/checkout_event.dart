@@ -44,7 +44,7 @@ class Auth extends CheckoutEvent {
 
   final String cryptogram;
   final String cardHolder;
-  final String amount;
+  final num amount;
 }
 
 class Charge extends CheckoutEvent {
