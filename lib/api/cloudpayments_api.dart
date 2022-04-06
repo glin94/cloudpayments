@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloudpayments/api/models/models.dart';
 import 'package:dio/dio.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 export 'models/models.dart';
 
@@ -22,11 +23,15 @@ class CloudPaymentsAPI {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': authstr,
-          // "CLOUD_PAYMENTS_CLIENT_ID": clientId,
-          // "CLOUD_PAYMENTS_SECRET": secret,
         },
       ),
-    );
+    )..interceptors.add(
+        PrettyDioLogger(
+          requestBody: true,
+          requestHeader: true,
+          responseBody: true,
+        ),
+      );
   }
 
   late final Dio _dio;

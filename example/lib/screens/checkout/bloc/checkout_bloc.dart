@@ -105,7 +105,7 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
         cardNumber: event.cardNumber!,
         cardDate: event.expiryDate!,
         cardCVC: event.cvcCode!,
-        publicId: Constants.MERCHANT_PUBLIC_ID,
+        publicId: CheckoutConstants.clientId,
       );
 
       if (cryptogram.cryptogram != null) {
@@ -233,7 +233,7 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
       final transaction = event.transaction;
       final result = await Cloudpayments.show3ds(
         acsUrl: transaction.model!.acsUrl!,
-        transactionId: transaction.model!.transactionId!,
+        transactionId: transaction.model!.transactionId!.toString(),
         paReq: transaction.model!.paReq!,
       );
 

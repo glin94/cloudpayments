@@ -27,23 +27,3 @@ class AppBlocObserver extends BlocObserver {
     talker.handle(error, stackTrace, '🚨 [BLOC] Error in ${bloc.runtimeType}');
   }
 }
-
-class BlocEventLog extends TalkerLog {
-  BlocEventLog(String message) : super(message);
-
-  @override
-  AnsiPen get pen => AnsiPen()..xterm(51);
-
-  @override
-  String get title => 'BLOC';
-}
-
-class BlocStateLog extends TalkerLog {
-  BlocStateLog(String message) : super(message);
-
-  @override
-  AnsiPen get pen => AnsiPen()..xterm(49);
-
-  @override
-  String get title => 'BLOC';
-}
