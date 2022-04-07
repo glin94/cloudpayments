@@ -5,6 +5,9 @@ class CheckoutEvent extends Equatable {
 
   @override
   List<Object?> get props => [];
+
+  @override
+  bool? get stringify => true;
 }
 
 class PayButtonPressed extends CheckoutEvent {
@@ -41,7 +44,7 @@ class Auth extends CheckoutEvent {
 
   final String cryptogram;
   final String cardHolder;
-  final String amount;
+  final num amount;
 }
 
 class Charge extends CheckoutEvent {
@@ -59,10 +62,10 @@ class Show3DS extends CheckoutEvent {
 }
 
 class Post3DS extends CheckoutEvent {
-  final String md;
+  final String id;
   final String paRes;
 
-  Post3DS(this.md, this.paRes);
+  Post3DS(this.id, this.paRes);
 }
 
 class GooglePayPressed extends CheckoutEvent {}

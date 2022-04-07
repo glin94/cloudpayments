@@ -4,6 +4,11 @@ import 'dart:io';
 import 'package:cloudpayments/models/models.dart';
 import 'package:flutter/services.dart';
 
+export 'models/models.dart';
+export 'apple_pay/apple_pay.dart';
+export 'google_pay/google_pay.dart';
+export 'api/cloudpayments_api.dart';
+
 /// Contains helpful methods that allow you to check payment card parameters validity and create a card cryptogram.
 class Cloudpayments {
   static const MethodChannel _channel = const MethodChannel('cloudpayments');

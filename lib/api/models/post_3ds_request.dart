@@ -7,8 +7,8 @@ class Post3dsRequest {
   Map<String, dynamic> toJson() {
     final map = Map<String, dynamic>();
 
-    map['transaction_id'] = transactionId;
-    map['pa_res'] = paRes;
+    map['TransactionId'] = transactionId;
+    map['PaRes'] = paRes;
 
     return map;
   }

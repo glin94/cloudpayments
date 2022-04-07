@@ -49,4 +49,7 @@ class CheckoutState extends Equatable {
       cvcError: cvcError,
     );
   }
+
+  @override
+  bool? get stringify => true;
 }
