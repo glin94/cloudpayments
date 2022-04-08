@@ -11,6 +11,8 @@ export 'api/cloudpayments_api.dart';
 
 /// Contains helpful methods that allow you to check payment card parameters validity and create a card cryptogram.
 class Cloudpayments {
+  Cloudpayments._();
+
   static const MethodChannel _channel = const MethodChannel('cloudpayments');
 
   /// Checks if the given [cardNumber] is valid.
