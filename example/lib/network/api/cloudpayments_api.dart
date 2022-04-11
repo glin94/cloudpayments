@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:cloudpayments/api/models/models.dart';
 import 'package:dio/dio.dart';
+import 'package:example/network/api/models/models.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 export 'models/models.dart';
