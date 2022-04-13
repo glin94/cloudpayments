@@ -3,8 +3,8 @@ import 'package:equatable/equatable.dart';
 import 'package:example/common/extended_bloc.dart';
 import 'package:example/common/logger.dart';
 import 'package:example/constants.dart';
+import 'package:example/network/api/cloudpayments_api.dart';
 import 'package:example/network/ip_service.dart';
-// import 'package:example/network/api.dart';
 import 'package:example/screens/checkout/bloc/checkout_constants.dart';
 
 part 'checkout_state.dart';

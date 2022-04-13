@@ -18,7 +18,7 @@
 //   }
 // }
 
-import 'package:cloudpayments/cloudpayments.dart';
+import 'package:example/network/api/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'transaction.g.dart';
