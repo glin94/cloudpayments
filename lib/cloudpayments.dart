@@ -76,7 +76,10 @@ class Cloudpayments {
         return null;
       } else {
         return ThreeDsResponse(
-            success: true, md: arguments['md'], paRes: arguments['paRes']);
+          success: true,
+          md: arguments['md'],
+          paRes: arguments['paRes'],
+        );
       }
     } on PlatformException catch (e) {
       return ThreeDsResponse(success: false, error: e.message);
