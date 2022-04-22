@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloudpayments/cloudpayments.dart';
 import 'package:equatable/equatable.dart';
 import 'package:example/common/extended_bloc.dart';
@@ -17,7 +19,6 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
           isGooglePayAvailable: false,
         ));
 
-  // final _api = Api();
   final _ipService = IpService();
   final _googlePay = CloudpaymentsGooglePay(GooglePayEnvironment.test);
   final _applePay = CloudpaymentsApplePay();
@@ -28,10 +29,9 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
 
   @override
   Stream<CheckoutState> mapEventToState(CheckoutEvent event) async* {
-    // if (event is Init) {
-    //   yield* _init(event);
-    // } else
-    if (event is PayButtonPressed) {
+    if (event is Init) {
+      yield* _init(event);
+    } else if (event is PayButtonPressed) {
       yield* _onPayButtonPressed(event);
     } else if (event is Auth) {
       yield* _auth(event);
@@ -43,26 +43,25 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
       yield* _googlePayPressed(event);
     } else if (event is ApplePayPressed) {
       yield* _applePayPressed(event);
+    } else if (event is Charge) {
+      yield* _charge(event);
     }
-    // else if (event is Charge) {
-    //   yield* _charge(event);
-    // }
   }
 
-  // Stream<CheckoutState> _init(Init event) async* {
-  //   if (Platform.isAndroid) {
-  //     final isGooglePayAvailable = await _googlePay.isGooglePayAvailable();
-  //     yield state.copyWith(
-  //         isGooglePayAvailable: isGooglePayAvailable,
-  //         isApplePayAvailable: false);
-  //   } else if (Platform.isIOS) {
-  //     final isApplePayAvailable = await _applePay.isApplePayAvailable();
-  //     yield state.copyWith(
-  //         isApplePayAvailable: isApplePayAvailable,
-  //         isGooglePayAvailable: false);
-  //   }
-  //   yield state;
-  // }
+  Stream<CheckoutState> _init(Init event) async* {
+    if (Platform.isAndroid) {
+      final isGooglePayAvailable = await _googlePay.isGooglePayAvailable();
+      yield state.copyWith(
+          isGooglePayAvailable: isGooglePayAvailable,
+          isApplePayAvailable: false);
+    } else if (Platform.isIOS) {
+      final isApplePayAvailable = await _applePay.isApplePayAvailable();
+      yield state.copyWith(
+          isApplePayAvailable: isApplePayAvailable,
+          isGooglePayAvailable: false);
+    }
+    yield state;
+  }
 
   Stream<CheckoutState> _onPayButtonPressed(PayButtonPressed event) async* {
     final cardNumber = event.cardNumber;
@@ -179,20 +178,30 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
     }
   }
 
-  // Stream<CheckoutState> _charge(Charge event) async* {
-  //   yield state.copyWith(isLoading: true);
+  Stream<CheckoutState> _charge(Charge event) async* {
+    yield state.copyWith(isLoading: true);
 
-  //   try {
-  //     final transaction =
-  //         await _api.charge(event.token, event.cardHolder, event.amount);
-  //     yield state.copyWith(isLoading: false);
-  //     sendCommand(ShowSnackBar(transaction.cardHolderMessage));
-  //   } catch (e, st) {
-  //     talker.handle(e, st);
-  //     yield state.copyWith(isLoading: false);
-  //     sendCommand(ShowSnackBar("Error"));
-  //   }
-  // }
+    try {
+      final ip = await _ipService.getIp();
+      final request = PayRequest(
+        amount: event.amount,
+        currency: "RUB",
+        name: event.cardHolder,
+        cardCryptogramPacket: event.token,
+        invoiceId: "1122",
+        description: "Оплата товаров",
+        accountId: "123",
+        ipAddress: ip,
+      );
+      final transaction = await _cloudPaymentApi.charge(request);
+      yield state.copyWith(isLoading: false);
+      sendCommand(ShowSnackBar(transaction.message ?? 'error'));
+    } catch (e, st) {
+      talker.handle(e, st);
+      yield state.copyWith(isLoading: false);
+      sendCommand(ShowSnackBar("Error"));
+    }
+  }
 
   Stream<CheckoutState> _auth(Auth event) async* {
     yield state.copyWith(isLoading: true);
@@ -206,9 +215,9 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
           cardCryptogramPacket: event.cryptogram,
           ipAddress: ip,
           currency: "RUB",
-          // invoiceId: "1122",
-          // description: "Оплата товаров",
-          // accountId: "123",
+          invoiceId: "1122",
+          description: "Оплата товаров",
+          accountId: "123",
         ),
       );
 
