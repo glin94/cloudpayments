@@ -28,8 +28,6 @@ import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 
-const val LOAD_PAYMENT_DATA_REQUEST_CODE = 991
-
 /** CloudpaymentsPlugin */
 class CloudpaymentsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     PluginRegistry.ActivityResultListener {
@@ -40,10 +38,10 @@ class CloudpaymentsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private lateinit var channel: MethodChannel
     private var activity: FlutterFragmentActivity? = null
     private var binding: ActivityPluginBinding? = null
-
     private var paymentsClient: PaymentsClient? = null
-
     private var lastPaymentResult: Result? = null
+
+    private val LOAD_PAYMENT_DATA_REQUEST_CODE = 991
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "cloudpayments")
