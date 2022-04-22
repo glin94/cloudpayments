@@ -30,7 +30,7 @@ import java.net.URLEncoder;
 
 public class ThreeDsDialogFragment extends DialogFragment {
 
-    private static final  String  POST_BACK_URL = "https://demo.cloudpayments.ru/WebFormPost/GetWebViewData";
+    private static final String POST_BACK_URL = "https://demo.cloudpayments.ru/WebFormPost/GetWebViewData";
 
     private static final String ACS_URL = "acs_url";
     private static final String MD = "md";
@@ -45,7 +45,7 @@ public class ThreeDsDialogFragment extends DialogFragment {
     private ThreeDSDialogListener listener;
 
     private WebView webViewThreeDs;
-    
+
     public void setListener(ThreeDSDialogListener listener) {
         this.listener = listener;
     }
@@ -175,7 +175,7 @@ public class ThreeDsDialogFragment extends DialogFragment {
             }
         }
     }
-    
+
 
     @Override
     public void onCancel(@NonNull DialogInterface dialog) {

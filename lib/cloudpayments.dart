@@ -65,7 +65,7 @@ class Cloudpayments {
     required String paReq,
   }) async {
     try {
-      final dynamic arguments =
+      final arguments =
           await _channel.invokeMethod<dynamic>('show3ds', {
         'acsUrl': acsUrl,
         'transactionId': transactionId,
@@ -83,6 +83,8 @@ class Cloudpayments {
       }
     } on PlatformException catch (e) {
       return ThreeDsResponse(success: false, error: e.message);
+    } catch (e){
+      return ThreeDsResponse(success: false, error: '$e');
     }
   }
 
