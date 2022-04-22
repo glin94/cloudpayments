@@ -4,7 +4,6 @@ import 'package:cloudpayments/cloudpayments.dart';
 import 'package:equatable/equatable.dart';
 import 'package:example/common/extended_bloc.dart';
 import 'package:example/common/logger.dart';
-import 'package:example/constants.dart';
 import 'package:example/network/api/cloudpayments_api.dart';
 import 'package:example/network/ip_service.dart';
 import 'package:example/screens/checkout/bloc/checkout_constants.dart';
@@ -123,8 +122,8 @@ class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
         price: '2.34',
         currencyCode: 'RUB',
         countryCode: 'RU',
-        merchantName: Constants.MERCHANT_NAME,
-        publicId: Constants.MERCHANT_PUBLIC_ID,
+        merchantName: CheckoutConstants.merchantName,
+        publicId: CheckoutConstants.clientId,
       );
 
       yield state.copyWith(isLoading: false);
