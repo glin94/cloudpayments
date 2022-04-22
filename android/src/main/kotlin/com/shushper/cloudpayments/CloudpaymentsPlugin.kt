@@ -1,20 +1,15 @@
 package com.shushper.cloudpayments
 
-import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Intent
-import android.util.Log
 import androidx.annotation.NonNull
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import com.shushper.cloudpayments.googlepay.GooglePayUtil
 import com.shushper.cloudpayments.sdk.cp_card.CPCard
 import com.shushper.cloudpayments.sdk.three_ds.ThreeDSDialogListener
 import com.shushper.cloudpayments.sdk.three_ds.ThreeDsDialogFragment
-import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -26,6 +21,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.UnsupportedEncodingException
+import java.lang.Exception
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import javax.crypto.BadPaddingException
@@ -59,7 +55,7 @@ class CloudpaymentsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        this.activity = binding.getActivity() as FlutterFragmentActivity;
+        this.activity = binding.activity as? FlutterFragmentActivity;
         this.binding = binding
         binding.addActivityResultListener(this)
     }
@@ -78,7 +74,7 @@ class CloudpaymentsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        this.activity = binding.getActivity() as FlutterFragmentActivity;
+        this.activity = binding.activity as? FlutterFragmentActivity;
         this.binding = binding
         binding.addActivityResultListener(this)
     }
@@ -194,6 +190,12 @@ class CloudpaymentsPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         val paReq = params["paReq"] as String
 
         val activity = this.activity
+        if(activity == null){
+            if(binding?.activity !is FlutterFragmentActivity){
+                throw Exception("Flutter application MainActivity class does not implements FlutterFragmentActivity");
+            }
+        }
+
         if (activity != null) {
             val dialog = ThreeDsDialogFragment.newInstance(
                 acsUrl,
