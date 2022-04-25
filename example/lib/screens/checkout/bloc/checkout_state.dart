@@ -53,3 +53,11 @@ class CheckoutState extends Equatable {
   @override
   bool? get stringify => true;
 }
+
+class CheckoutError extends CheckoutState {
+  const CheckoutError(this.message);
+  final String message;
+
+  @override
+  List<Object?> get props => super.props..add(message);
+}

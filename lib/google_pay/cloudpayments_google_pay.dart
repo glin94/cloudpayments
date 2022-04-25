@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloudpayments/models/google_pay_response.dart';
@@ -17,9 +18,13 @@ class CloudpaymentsGooglePay {
   }
 
   void _initGooglePay(String environment) async {
-    await _channel.invokeMethod('createPaymentsClient', {
-      'environment': environment,
-    });
+    try {
+      await _channel.invokeMethod('createPaymentsClient', {
+        'environment': environment,
+      });
+    } on Exception catch (e, st) {
+      log('$e\n$st');
+    }
   }
 
   /// Checks whether a Google Pay is available on this device and can process payment requests using

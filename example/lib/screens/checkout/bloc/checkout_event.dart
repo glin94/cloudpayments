@@ -48,11 +48,13 @@ class Auth extends CheckoutEvent {
 }
 
 class Charge extends CheckoutEvent {
+  const Charge(this.token, this.cardHolder, this.amount);
   final String token;
   final String cardHolder;
-  final String amount;
+  final int amount;
 
-  Charge(this.token, this.cardHolder, this.amount);
+  @override
+  List<Object?> get props => super.props..addAll([token, cardHolder, amount]);
 }
 
 class Show3DS extends CheckoutEvent {

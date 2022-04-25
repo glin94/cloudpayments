@@ -70,9 +70,17 @@ class CloudPaymentsAPI {
     return Transaction.fromJson(response.data);
   }
 
+  Future<Transaction> charge(PayRequest payRequest) async {
+    final response = await _dio.post(
+      _CloudPaymentsUrls.chargeUrl,
+      data: payRequest.toJson(),
+    );
+
+    return Transaction.fromJson(response.data);
+  }
+
   Future<void> test() async {
     final response = await _dio.post(_CloudPaymentsUrls.test);
-
     log('$response');
   }
 }
