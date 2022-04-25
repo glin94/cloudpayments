@@ -13,8 +13,7 @@ class CheckoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<CheckoutBloc>(
       create: (context) {
-        return CheckoutBloc();
-        //..add(Init());
+        return CheckoutBloc()..add(Init());
       },
       child: const CheckoutScreenContent(),
     );
@@ -59,7 +58,13 @@ class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
       appBar: AppBar(
         title: const Text('Checkout'),
       ),
-      body: BlocBuilder<CheckoutBloc, CheckoutState>(
+      body: BlocConsumer<CheckoutBloc, CheckoutState>(
+        listener: ((context, state) {
+          if (state is CheckoutError) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        }),
         builder: (context, state) {
           return LoadingOverlay(
             isLoading: state.isLoading,
