@@ -2,16 +2,16 @@ import 'dart:io';
 
 import 'package:cloudpayments/cloudpayments.dart';
 import 'package:equatable/equatable.dart';
-import 'package:example/common/extended_bloc.dart';
-import 'package:example/common/logger.dart';
+import 'package:example/main.dart';
 import 'package:example/network/api/cloudpayments_api.dart';
 import 'package:example/network/ip_service.dart';
 import 'package:example/screens/checkout/bloc/checkout_constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'checkout_state.dart';
 part 'checkout_event.dart';
 
-class CheckoutBloc extends ExtendedBloc<CheckoutEvent, CheckoutState> {
+class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
   CheckoutBloc()
       : super(const CheckoutState(
           isLoading: false,

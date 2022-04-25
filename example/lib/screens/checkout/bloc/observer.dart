@@ -1,6 +1,6 @@
 import 'package:example/common/logger.dart';
+import 'package:example/main.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:talker/talker.dart';
 
 class AppBlocObserver extends BlocObserver {
   @override

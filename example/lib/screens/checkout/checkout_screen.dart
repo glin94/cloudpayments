@@ -1,4 +1,3 @@
-import 'package:example/common/extended_bloc.dart';
 import 'package:example/custom_button.dart';
 import 'package:example/screens/checkout/bloc/checkout_bloc.dart';
 import 'package:flutter/material.dart';
@@ -60,120 +59,110 @@ class _CheckoutScreenContentState extends State<CheckoutScreenContent> {
       appBar: AppBar(
         title: const Text('Checkout'),
       ),
-      body: BlocCommandsListener<CheckoutBloc>(
-        listener: (context, command) {
-          if (command is ShowSnackBar) {
-            final snackBar = SnackBar(
-              content: Text(command.message),
-            );
-            Scaffold.of(context).showSnackBar(snackBar);
-          }
-        },
-        child: BlocBuilder<CheckoutBloc, CheckoutState>(
-          builder: (context, state) {
-            return LoadingOverlay(
-              isLoading: state.isLoading,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Total to be paid: 2 RUB.',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+      body: BlocBuilder<CheckoutBloc, CheckoutState>(
+        builder: (context, state) {
+          return LoadingOverlay(
+            isLoading: state.isLoading,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Total to be paid: 2 RUB.',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextField(
+                      controller: cardHolderController,
+                      keyboardType: TextInputType.name,
+                      textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: 'Card holder',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        border: UnderlineInputBorder(),
+                        errorText: state.cardHolderError,
                       ),
-                      TextField(
-                        controller: cardHolderController,
-                        keyboardType: TextInputType.name,
-                        textCapitalization: TextCapitalization.words,
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: 'Card holder',
-                          labelStyle: TextStyle(color: Colors.grey),
-                          border: UnderlineInputBorder(),
-                          errorText: state.cardHolderError,
-                        ),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    TextField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [cardNumberMaskFormatter],
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: 'Card number',
+                        labelStyle: TextStyle(color: Colors.grey),
+                        border: UnderlineInputBorder(),
+                        errorText: state.cardNumberError,
                       ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      TextField(
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [cardNumberMaskFormatter],
-                        textInputAction: TextInputAction.next,
-                        decoration: InputDecoration(
-                          labelText: 'Card number',
-                          labelStyle: TextStyle(color: Colors.grey),
-                          border: UnderlineInputBorder(),
-                          errorText: state.cardNumberError,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              textInputAction: TextInputAction.next,
-                              inputFormatters: [expireDateFormatter],
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: 'Expire Date',
-                                labelStyle: TextStyle(color: Colors.grey),
-                                border: UnderlineInputBorder(),
-                                errorText: state.expiryDateError,
-                              ),
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            textInputAction: TextInputAction.next,
+                            inputFormatters: [expireDateFormatter],
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'Expire Date',
+                              labelStyle: TextStyle(color: Colors.grey),
+                              border: UnderlineInputBorder(),
+                              errorText: state.expiryDateError,
                             ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            textInputAction: TextInputAction.done,
+                            inputFormatters: [cvcDateFormatter],
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: 'CVC',
+                              labelStyle: TextStyle(color: Colors.grey),
+                              border: UnderlineInputBorder(),
+                              errorText: state.cvcError,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    CustomButton(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Pay with card',
+                            textAlign: TextAlign.center,
                           ),
                           SizedBox(
                             width: 16,
                           ),
-                          Expanded(
-                            child: TextField(
-                              textInputAction: TextInputAction.done,
-                              inputFormatters: [cvcDateFormatter],
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: 'CVC',
-                                labelStyle: TextStyle(color: Colors.grey),
-                                border: UnderlineInputBorder(),
-                                errorText: state.cvcError,
-                              ),
-                            ),
-                          ),
+                          Icon(Icons.credit_card),
                         ],
                       ),
-                      SizedBox(
-                        height: 16,
-                      ),
-                      CustomButton(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Pay with card',
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(
-                              width: 16,
-                            ),
-                            Icon(Icons.credit_card),
-                          ],
-                        ),
-                        onPressed: () => _onPayClick(context),
-                      ),
-                      if (state.isGooglePayAvailable) GooglePaySection(),
-                      if (state.isApplePayAvailable) ApplePaySection(),
-                    ],
-                  ),
+                      onPressed: () => _onPayClick(context),
+                    ),
+                    if (state.isGooglePayAvailable) GooglePaySection(),
+                    if (state.isApplePayAvailable) ApplePaySection(),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
