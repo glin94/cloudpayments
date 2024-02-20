@@ -141,7 +141,7 @@ public class CPCard {
      * Валидация даты
      * @return
      */
-    public static boolean isValidExpDate(String expDate) {
+     public static boolean isValidExpDate(String expDate) {
         if (expDate.length() != 4) {
             return false;
         }
@@ -155,16 +155,17 @@ public class CPCard {
             calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
             date = calendar.getTime();
 
-            Date currentDate = new Date();
-            if (currentDate.before(date)) {
+            Calendar currentCalendar = Calendar.getInstance();
+            int currentYear = currentCalendar.get(Calendar.YEAR) % 100; // Получаем последние две цифры текущего года
+            int cardYear = calendar.get(Calendar.YEAR) % 100; // Получаем последние две цифры года окончания срока действия карты
+
+            if (cardYear >= 21) { // Если срок годности карты истекает после 2021 года или позже
                 return true;
-            } else {
-                return false;
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     /**
