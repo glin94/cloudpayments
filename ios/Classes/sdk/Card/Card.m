@@ -170,36 +170,16 @@
     [dateFormatter setDateFormat:@"MM/yy"];
     NSDate *date = [dateFormatter dateFromString:expDateString];
     
-    // get last day of the current month
-    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    [calendar setTimeZone:[NSTimeZone systemTimeZone]];
-
-    NSRange dayRange = [ calendar rangeOfUnit:NSCalendarUnitDay
-                                       inUnit:NSCalendarUnitMonth
-                                      forDate:date];
-
-    NSInteger numberOfDaysInCurrentMonth = dayRange.length;
-
-    NSDateComponents *comp = [calendar components:
-                              NSCalendarUnitYear |
-                              NSCalendarUnitMonth |
-                              NSCalendarUnitDay fromDate:date];
-
-    comp.day = numberOfDaysInCurrentMonth;
-    comp.hour = 24;
-    comp.minute = 0;
-    comp.second = 0;
-
-    date = [calendar dateFromComponents:comp];
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitYear fromDate:date];
+    NSInteger year = [components year];
     
-    NSDate *now = [NSDate new];
-    
-    if([date compare: now] == NSOrderedDescending){
+    if (year >= 21) { // Если срок годности карты истекает после 2021 года или позже
         return true;
     }
     
     return false;
 }
+
 
 +(CardType) cardTypeFromCardNumber:(NSString *)cardNumberString {
     NSString *cleanCardNumber = [Card cleanCreditCardNo:cardNumberString];
